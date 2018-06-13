@@ -9,7 +9,7 @@ describe "test de una familia que NO pasea" {
 	var mediaDerecha = new Prenda(desgaste = 3, talle='s')
 	
 	//prenda par, la media izquierda tiene que tener 1 de desgaste, la derecha 3, el abrigo es default 0
-    var mediasZoe = new PrendaDeAPar(izquierdo=mediaIzquierda, derecho=mediaDerecha, talle=s) 
+    var mediasZoe = new PrendaDeAPar(izquierdo=mediaIzquierda, derecho=mediaDerecha, talle=s, abrigo=0) 
 	
 	//prenda par, el izquierdo y derecho tiene los valores default (desgaste 0, abrigo 1)
 	var zapatillasZoe = new PrendaDeAPar(talle=s) 
@@ -47,7 +47,6 @@ describe "test de una familia que NO pasea" {
 	
 //PUNTO 1	
 	test "comodidad" {
-		
 		assert.equals(6 , mediasZoe.comodidadTotalPara(zoe) )
 		assert.equals(8 , zapatillasZoe.comodidadTotalPara(zoe))
 		assert.equals(8 , jeanZoe.comodidadTotalPara(zoe))
@@ -128,5 +127,4 @@ test "salir de paseo ok" {
 		familiaNoAptaParaSalir.pasear()
 	}
 	
-
 }

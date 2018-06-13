@@ -1,30 +1,17 @@
-//Esta clase no debe existir, 
-//está para que el test compile al inicio del examen
-//al finalizar el examen hay que borrar esta clase
-class XXX {
-	var talle= null
-	var desgaste= null
-	var min= null
-	var max= null
-	var prendas= null
-	var ninios= null
-	var edad= null
-	var juguete = null
-	var abrigo = null
-}
-
 class Ninio{
 	var property talle
 	var property edad
 	var property prendas = #{}
 	method cantidadDePrendas() = self.prendas().size()
 	method cantidadDePrendasParaSalir() = 5 
-	method promedioCalidad() = self.prendas().sum({_prenda => _prenda.calidad()}) / self.cantidadDePrendas()
+	method promedioCalidad() = self.prendas().sum({_prenda => _prenda.calidad(self)}) / self.cantidadDePrendas()
 	method algunaPrendaConAbrigoMayorA3() = self.prendas().any({_prenda => _prenda.abrigo()>=3})
 	
 	method comodidadTotal() = self.prendas().sum({_prenda => _prenda.comodidadTotalPara(self)})
 	
 	method listoParaSalir() = (self.cantidadDePrendas()>=self.cantidadDePrendasParaSalir()) && self.algunaPrendaConAbrigoMayorA3() && (self.promedioCalidad()>8)
+	
+	method usarPrendas() = self.prendas().forEach({_prenda => _prenda.usarse()})
 }
 
 class NinioProblematico inherits Ninio{
@@ -41,7 +28,12 @@ class Juguete{
 
 class Familia{
 	var property ninios = #{}
-	method puedePasear() = self.ninios().all({_pendejo => _pendejo.listoParaSalir()})
+	method puedePasear() = self.ninios().all({_ninio => _ninio.listoParaSalir()})
+	method chiquitos() = self.ninios().filter({_ninio => _ninio.edad()<4})
+	method infaltables() = self.ninios().map({_ninio => _ninio.prendas().max({_prenda => _prenda.calidad(_ninio)})}).asSet()
+	method pasear(){
+		self.ninios().forEach({_ninio => _ninio.usarPrendas()})
+	}
 }
 
 class Prenda {
@@ -63,7 +55,15 @@ class Prenda {
 	
 	method abrigo()=abrigo
 	method desgaste()=desgaste
-	method calidad()=self.abrigo()+self.desgaste()
+	method calidad(ninio)=self.abrigo()+self.comodidadTotalPara(ninio)
+	
+	method gastar(x){
+		desgaste+=x
+	}
+	
+	method usarse(){
+		self.gastar(1)
+	}
 }
 
 class PrendaDeAPar inherits Prenda {
@@ -93,6 +93,11 @@ class PrendaDeAPar inherits Prenda {
 			self.cambiarDerecho(temp)
 		}
 		else error.throwWithMessage('Las prendas a intercambiar no tienen el mismo talle')
+	}
+	
+	override method usarse(){
+		izquierdo=self.izquierdo().gastar(0.8)
+		derecho=self.derecho().gastar(1.2)
 	}
 }
 
