@@ -32,7 +32,10 @@ class Familia{
 	method chiquitos() = self.ninios().filter({_ninio => _ninio.edad()<4})
 	method infaltables() = self.ninios().map({_ninio => _ninio.prendas().max({_prenda => _prenda.calidad(_ninio)})}).asSet()
 	method pasear(){
-		self.ninios().forEach({_ninio => _ninio.usarPrendas()})
+		if(self.puedePasear()){
+			self.ninios().forEach({_ninio => _ninio.usarPrendas()})
+		}
+		else error.throwWithMessage('Familia no esta lista para pasear')
 	}
 }
 
