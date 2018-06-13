@@ -18,20 +18,30 @@ class Ninio{
 	var property edad
 	var property prendas = #{}
 	method cantidadDePrendas() = self.prendas().size()
+	method cantidadDePrendasParaSalir() = 5 
 	method promedioCalidad() = self.prendas().sum({_prenda => _prenda.calidad()}) / self.cantidadDePrendas()
 	method algunaPrendaConAbrigoMayorA3() = self.prendas().any({_prenda => _prenda.abrigo()>=3})
 	
 	method comodidadTotal() = self.prendas().sum({_prenda => _prenda.comodidadTotalPara(self)})
 	
-	method listoParaSalir() = self.cantidadDePrendas()>5 && self.algunaPrendaConAbrigoMayorA3() && self.promedioCalidad()
+	method listoParaSalir() = (self.cantidadDePrendas()>=self.cantidadDePrendasParaSalir()) && self.algunaPrendaConAbrigoMayorA3() && (self.promedioCalidad()>8)
 }
 
 class NinioProblematico inherits Ninio{
-	
+	var property juguete
+	override method cantidadDePrendasParaSalir() = 4
+	method jugueteRecomendado() = self.edad().between(self.juguete().min(),self.juguete().max())
+	override method listoParaSalir() = super() && self.jugueteRecomendado()
+}
+
+class Juguete{
+	var property min
+	var property max
 }
 
 class Familia{
 	var property ninios = #{}
+	method puedePasear() = self.ninios().all({_pendejo => _pendejo.listoParaSalir()})
 }
 
 class Prenda {
@@ -48,11 +58,7 @@ class Prenda {
 			else self.desgaste() 
 	}
 	method comodidadTotalPara(ninio){
-		return self.comodidadPara(ninio) - 
-			if (self.desgasteTotal()<0) 
-				error.throwWithMessage('Desgaste menor a 0 no permitido') 
-			else 
-				self.desgasteTotal()
+		return self.comodidadPara(ninio) - self.desgasteTotal()
 	}
 	
 	method abrigo()=abrigo
@@ -80,7 +86,7 @@ class PrendaDeAPar inherits Prenda {
 		return if (self.desgasteDelPar()>3) 3 else self.desgasteDelPar() 
 	}
 	
-	method intercambiarCon(otroPar){
+	method intercambiar(otroPar){
 		if(self.talle()==otroPar.talle()){
 			var temp = otroPar.derecho()
 			otroPar.cambiarDerecho(self.derecho())
@@ -91,17 +97,14 @@ class PrendaDeAPar inherits Prenda {
 }
 
 class RopaLiviana inherits Prenda {
-	override method desgaste() = valores.desgasteRopaLiviana()
-	override method abrigo() = valores.nivelDeAbrigoLiviano()
+	override method abrigo() = if (abrigo<valores.valorInicialRopaLiviana()) valores.valorInicialRopaLiviana() else abrigo
 	override method comodidadTotalPara(ninio){
 		return super(ninio)+2
 	}
 }
 
 class RopaPesada inherits Prenda {
-	var nivelDeAbrigo = 3
-	override method desgaste() = valores.desgasteRopaPesada()
-	override method abrigo() = nivelDeAbrigo
+	override method abrigo() = if (abrigo<valores.valorInicialRopaPesada()) valores.valorInicialRopaPesada() else abrigo
 }
 
 //Objetos usados para los talles
@@ -121,7 +124,7 @@ object xl{
 }
 
 object valores{
-	method desgasteRopaLiviana()=0
-	method desgasteRopaPesada()=0
+	method valorInicialRopaLiviana()=0
+	method valorInicialRopaPesada()=3
 	method nivelDeAbrigoLiviano()=1
 }
