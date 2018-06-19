@@ -1,3 +1,14 @@
+//Nota 9 (nueve)
+//test todos bien menos el último punto
+//1) B+ Algun problema con la prenda par
+//2) MB
+//3) B problemas manejando valores por default. Mal la ropa liviana
+//4) MB
+//5) MB
+//6) MB
+//7) B Problemas de delegacion
+//8) MB
+
 class Ninio{
 	var property talle
 	var property edad
@@ -30,6 +41,7 @@ class Familia{
 	var property ninios = #{}
 	method puedePasear() = self.ninios().all({_ninio => _ninio.listoParaSalir()})
 	method chiquitos() = self.ninios().filter({_ninio => _ninio.edad()<4})
+	//TODO Delegar mejor: pedirle la prenda infaltable directamente el niño
 	method infaltables() = self.ninios().map({_ninio => _ninio.prendas().max({_prenda => _prenda.calidad(_ninio)})}).asSet()
 	method pasear(){
 		if(self.puedePasear()){
@@ -41,7 +53,7 @@ class Familia{
 
 class Prenda {
 	var property talle
-	var desgaste = 0
+	var desgaste = 0 
 	var abrigo = 1
 	
 	method comodidadPara(ninio){
@@ -85,6 +97,9 @@ class PrendaDeAPar inherits Prenda {
 		return super(ninio) - if(ninio.edad()<4) 1 else 0
 	}
 	
+	//TODO: Quedó el máximo duplicado. Te convenía simplement sobreescribir el metodo desgaste
+	//para que haga lo que hace desgasteDelPar. De hecho ahora entiende el mensaje "desgaste"
+	//y no sirve para nada lo que devuelve
 	override method desgasteTotal(){
 		return if (self.desgasteDelPar()>3) 3 else self.desgasteDelPar() 
 	}
@@ -105,6 +120,10 @@ class PrendaDeAPar inherits Prenda {
 }
 
 class RopaLiviana inherits Prenda {
+	//TODO: No no! por que te complicas? `return objetoQueSabeElValr.valorRopaLiviana()`.
+	// de manera tal qeu al cambiar el valor en el objeto valores ya las ropas livianas contestan el valor nuevo
+	//Esto que hiciste de recordarlo en una variable no solo es innecesario
+	//si no que está mal, porque si de repente disminuyo el valor de la configuracion la prenda no se actual no se actualiza
 	override method abrigo() = if (abrigo<valores.valorInicialRopaLiviana()) valores.valorInicialRopaLiviana() else abrigo
 	override method comodidadTotalPara(ninio){
 		return super(ninio)+2
@@ -112,6 +131,7 @@ class RopaLiviana inherits Prenda {
 }
 
 class RopaPesada inherits Prenda {
+	//TODO: mal manejado el valor default. 
 	override method abrigo() = if (abrigo<valores.valorInicialRopaPesada()) valores.valorInicialRopaPesada() else abrigo
 }
 
